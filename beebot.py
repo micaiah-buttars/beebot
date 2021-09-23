@@ -1,5 +1,15 @@
+'''BeeBot is picky. Make sure to run these to make it work:
+        source venv/bin/activate
+        source secrets.sh
+'''
+
+
+import discord
+import os
 from random import choice
 
+
+client = discord.Client()
 
 def open_and_read_file(file_path):
     contents = open(file_path).read().replace("\n", " ")
@@ -21,8 +31,6 @@ def make_chains(text_string):
 
 
 def make_text(chains):
-    """Return text from chains."""
-
     words = [list(chains)[0][0], list(chains)[0][1]]
 
     i = 0
@@ -30,16 +38,24 @@ def make_text(chains):
         words.append(choice(chains[(words[i], words[i + 1])]))
         i += 1
 
-    print(' '.join(words))
-
+    return ' '.join(words)
 
 input_path = 'beemovie.txt'
-
-# Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
-
-# Get a Markov chain
 chains = make_chains(input_text)
 
-# Produce random text
-random_text = make_text(chains)
+
+
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('$bee'):
+        await message.channel.send(f"{make_text(chains)}")
+
+client.run(os.environ.get('DISCORD_TOKEN'))
