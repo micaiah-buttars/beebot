@@ -46,16 +46,30 @@ chains = make_chains(input_text)
 
 
 
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 @client.event
 async def on_message(message):
+    msg = message.content.lower()
+
+
     if message.author == client.user:
         return
 
-    if message.content.startswith('$bee'):
-        await message.channel.send(f"{make_text(chains)}")
+    if any(e in msg for e in ['bee', 'honey']):
+        await message.channel.send(f"🐝 {make_text(chains)} 🐝")
+
+    if any(e in msg for e in ['jazz', 'hello', 'music', 'song']):
+        await message.channel.send("🐝 Ya like jazz? 🐝")
+
+    if 'good bot' in msg:
+        await message.channel.send("🐝 The Bee Movie was written and produced by Jerry Seinfeld, who also plays the protagonist, Barry B. Benson. 🐝")
+    elif 'bad bot' in msg:
+        await message.channel.send("🐝 Can you feel your heart burning? Can you feel the struggle within? The fear within me is beyond anything your soul can make. You cannot kill me in a way that matters. 🐝")
+    
+
 
 client.run(os.environ.get('DISCORD_TOKEN'))
